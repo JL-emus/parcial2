@@ -14,19 +14,19 @@ interface DatabaseConfig {
 
 const dbConfigurations: Record<string, DatabaseConfig> = {
   mysql: {
-    dialect: "mysql",
-    host: process.env.MYSQL_HOST || "localhost",
-    username: process.env.MYSQL_USER || "root",
-    password: process.env.MYSQL_PASSWORD || "",
-    database: process.env.MYSQL_NAME || "test",
-    port: parseInt(process.env.MYSQL_PORT || "3306")
-  },
+  dialect: "mysql",
+  host: process.env.MYSQL_HOST || "127.0.0.1",
+  username: process.env.MYSQL_USER || "root",
+  password: process.env.MYSQL_PASSWORD || "12345678*",
+  database: process.env.MYSQL_NAME || "parcial2",
+  port: parseInt(process.env.MYSQL_PORT || "3306")
+},
   postgres: {
     dialect: "postgres",
-    host: process.env.POSTGRES_HOST || "localhost",
+    host: process.env.POSTGRES_HOST || "127.0.0.1",
     username: process.env.POSTGRES_USER || "postgres",
-    password: process.env.POSTGRES_PASSWORD || "",
-    database: process.env.POSTGRES_NAME || "test",
+    password: process.env.POSTGRES_PASSWORD || "12345678*",
+    database: process.env.POSTGRES_NAME || "parcial2",
     port: parseInt(process.env.POSTGRES_PORT || "5432")
   }
 };
