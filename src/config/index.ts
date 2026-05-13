@@ -4,6 +4,7 @@ import morgan from "morgan";
 import { sequelize, testConnection, getDatabaseInfo } from "../database/db";
 import routes from "../routes/index";
 import { setupAssociations } from "../models/associations";
+import { populateData } from '../faker/populate_data';
 var cors = require("cors");
 
 dotenv.config();
@@ -50,6 +51,7 @@ export class App {
       // Sincronizar la base de datos
       await sequelize.sync({ force: false });
       setupAssociations();
+      await populateData();
       console.log(`📦 Base de datos sincronizada exitosamente`);
 
     } catch (error) {
