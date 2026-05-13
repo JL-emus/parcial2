@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
 import express, { Application } from "express";
 import morgan from "morgan";
+import cors from "cors"; // Cambiado a import estándar de TS
 import { sequelize, testConnection, getDatabaseInfo } from "../database/db";
 import routes from "../routes/index";
 import { setupAssociations } from "../models/associations";
 import { populateData } from '../faker/populate_data';
-var cors = require("cors");
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ export class App {
     this.settings();
     this.middlewares();
     this.routes();
-    this.dbConnection();
+    this.dbConnection(); // Este método se encarga de la magia
   }
 
   private settings(): void {
@@ -37,31 +37,38 @@ export class App {
 
   private async dbConnection(): Promise<void> {
     try {
-      // Mostrar información de la base de datos seleccionada
       const dbInfo = getDatabaseInfo();
-      console.log(`🔗 Intentando conectar a: ${dbInfo.engine.toUpperCase()}`);
+      console.log(`🔌 Conectando a base de datos: ${dbInfo.engine.toUpperCase()}`);
 
-      // Probar la conexión
+      // 1. Probar la conexión inicial
       const isConnected = await testConnection();
-
       if (!isConnected) {
         throw new Error(`No se pudo conectar a la base de datos ${dbInfo.engine.toUpperCase()}`);
       }
 
-      // Sincronizar la base de datos
-      await sequelize.sync({ force: false });
+      // 2. CONFIGURAR ASOCIACIONES (¡IMPORTANTE: Antes del sync!)
+      // Esto le dice a Sequelize que existen las FK antes de crear las tablas
       setupAssociations();
-      await populateData();
-      console.log(`📦 Base de datos sincronizada exitosamente`);
+
+      // 3. SINCRONIZAR TABLAS FÍSICAS
+      // Si aún no ves las tablas en DBeaver, cámbialo a { force: true } una sola vez
+      await sequelize.sync({ force: false });
+      console.log(`📦 Tablas físicas sincronizadas exitosamente`);
+
+      // 4. POBLAR DATOS (FAKER)
+      // COMENTA ESTA LÍNEA después de que veas los datos en DBeaver para no duplicar
+      await populateData(); 
+      console.log(`🚀 Base de datos poblada con registros de Faker`);
 
     } catch (error) {
-      console.error("❌ Error al conectar con la base de datos:", error);
-      process.exit(1); // Terminar la aplicación si no se puede conectar
+      console.error("❌ Error en el ciclo de base de datos:", error);
+      // No cerramos el proceso para permitir que nodemon intente reiniciar tras corregir
     }
   }
 
-  async listen() {
-    await this.app.listen(this.app.get('port'));
-    console.log(`🚀 Servidor ejecutándose en puerto ${this.app.get('port')}`);
+  async listen(): Promise<void> {
+    const port = this.app.get('port');
+    await this.app.listen(port);
+    console.log(`🚀 Servidor ejecutándose en puerto ${port}`);
   }
 }
