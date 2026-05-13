@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express, { Application } from "express";
 import morgan from "morgan";
 import { sequelize, testConnection, getDatabaseInfo } from "../database/db";
+import routes from "../routes/index";
 var cors = require("cors");
 
 dotenv.config();
@@ -29,7 +30,7 @@ export class App {
   }
 
   private routes(): void {
-    // Las rutas se configurarán más adelante
+    this.app.use("/api", routes);
   }
 
   private async dbConnection(): Promise<void> {
