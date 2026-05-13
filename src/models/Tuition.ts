@@ -61,8 +61,3 @@ Tuition.init(
   }
 );
 
-Tuition.belongsTo(Car, {
-  foreignKey: "car_id",
-  targetKey: "id",
-  as: "vehiculo"
-});

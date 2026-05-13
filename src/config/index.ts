@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import morgan from "morgan";
 import { sequelize, testConnection, getDatabaseInfo } from "../database/db";
 import routes from "../routes/index";
+import { setupAssociations } from "../models/associations";
 var cors = require("cors");
 
 dotenv.config();
@@ -48,6 +49,7 @@ export class App {
 
       // Sincronizar la base de datos
       await sequelize.sync({ force: false });
+      setupAssociations();
       console.log(`📦 Base de datos sincronizada exitosamente`);
 
     } catch (error) {
